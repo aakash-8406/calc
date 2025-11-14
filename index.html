@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Calculator</title>
+  <script src="server.js"></script>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f0f0f0;
+    }
+    .calculator {
+      width: 400px;
+      padding: 20px;
+      text-align: center;
+    }
+    #display {
+      width: 350px;
+      height: 70px;
+      font-size: 20px;
+      margin-bottom: 10px;
+      text-align: right;
+      padding-right: 10px;
+      border-radius: 20px;
+      background-color: white;
+    }
+    .buttons button {
+      width: 80px;
+      height: 80px;
+      margin: 5px;
+      font-size: 20px;
+      border: 2px solid white;
+      border-radius: 30px;
+      background-color: white;
+    }
+    .buttons button:active {
+      transform: scale(0.97);
+      box-shadow: 0 0 5px #aaa;
+    }
+    .res {
+      background-color: white;
+    }
+
+    @media (max-width: 500px) {
+      .buttons button {
+        width: 60px;
+        height: 60px;
+        font-size: 18px;
+      }
+      #display {
+        width: 280px;
+        height: 60px;
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <input type="text" id="display" disabled />
+    <div class="buttons">
+      <button onclick="handleClick(this,'1')">1</button>
+      <button onclick="handleClick(this,'2')">2</button>
+      <button onclick="handleClick(this,'3')">3</button>
+      <button class="res" onclick="clearOne(this)" onmousedown="startLongPress()" onmouseup="endLongPress()">C</button>
+      <button onclick="handleClick(this,'4')">4</button>
+      <button onclick="handleClick(this,'5')">5</button>
+      <button onclick="handleClick(this,'6')">6</button>
+      <button onclick="handleClick(this,'+')">+</button>
+      <button onclick="handleClick(this,'7')">7</button>
+      <button onclick="handleClick(this,'8')">8</button>
+      <button onclick="handleClick(this,'9')">9</button>
+      <button onclick="handleClick(this,'-')">-</button>
+      <button onclick="handleClick(this,'*')">*</button>
+      <button onclick="handleClick(this,'0')">0</button>
+      <button onclick="handleClick(this,'/')">/</button>
+      <button class="res" onclick="flashAndCalculate(this)">=</button>
+    </div>
+  </div>
+  <script>
+    let pressTimer;
+
+    function handleClick(button, val) {
+      appendValue(val);
+      button.style.backgroundColor = "lightgray";
+      setTimeout(() => {
+        button.style.backgroundColor = "white";
+      }, 100);
+    }
+
+    function appendValue(val) {
+      document.getElementById('display').value += val;
+    }
+
+    function clearOne(button) {
+      const display = document.getElementById('display');
+      display.value = display.value.slice(0, -1);
+      button.style.backgroundColor = "lightblue";
+      setTimeout(() => {
+        button.style.backgroundColor = "white";
+      }, 100);
+    }
+
+    function startLongPress() {
+      pressTimer = setTimeout(() => {
+        document.getElementById('display').value = '';
+      }, 1000); // 1 second
+    }
+
+    function endLongPress() {
+      clearTimeout(pressTimer);
+    }
+
+    function flashAndCalculate(button) {
+      button.style.backgroundColor = "lightgreen";
+      setTimeout(() => {
+        button.style.backgroundColor = "white";
+      }, 20);
+      calculate();
+    }
+
+    function calculate() {
+      const input = document.getElementById('display').value;
+      const operatorMatch = input.match(/[+\-*/]/);
+
+      if (!operatorMatch) {
+        document.getElementById('display').value = '0';
+        return;
+      }
+
+      const operator = operatorMatch[0];
+      const [a, b] = input.split(operator).map(Number);
+
+      let result;
+      switch (operator) {
+        case '+': result = a + b; break;
+        case '-': result = a - b; break;
+        case '*': result = a * b; break;
+        case '/': result = b === 0 ? 'Error' : a / b; break;
+        default: result = 'Error';
+      }
+
+      document.getElementById('display').value = result;
+    }
+  </script>
+</body>
+</html>
